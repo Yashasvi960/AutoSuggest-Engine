@@ -11,11 +11,11 @@ public class Trie {
 
     public void insert(String word, int freq) {
         TrieNode node = root;
-        for(char c: word.toLowerCase().toCharArray()) {
-            if(node.children[c-'a']==null) {
-                node.children[c-'a']=new TrieNode();
+        for(char c: word.toCharArray()) {
+            if(!node.children.containsKey(c)) {
+                node.children.put(c, new TrieNode());
             }
-            node = node.children[c-'a'];
+            node = node.children.get(c);
         }
         node.isEndOfWord = true;
         node.wordFrequency += freq;
@@ -44,10 +44,10 @@ public class Trie {
           collectWords(node, currPrefix, k, pq, seen);
         }
 
-        for(char first = 'a'; first<='z'; first++) {
-            if(node.children[first-'a']!=null) {
-                fuzzyPrefixSearch(node.children[first-'a'], input, currPrefix+first, k, pq, maxDistance, seen);
-            }
+        for(Map.Entry<Character, TrieNode> entry: node.children.entrySet()) {
+            Character entryKey = entry.getKey();
+            TrieNode child = entry.getValue();
+            fuzzyPrefixSearch(child, input, currPrefix+entryKey, k, pq, maxDistance, seen);
         }
     }
 
@@ -84,10 +84,10 @@ public class Trie {
           if(pq.size()>k) pq.poll();
       }
 
-      for(char first = 'a'; first<='z'; first++) {
-          if(node.children[first-'a']!=null) {
-              collectWords(node.children[first-'a'],currPrefix+first, k, pq, seen);
-          }
-      }
+        for(Map.Entry<Character, TrieNode> entry: node.children.entrySet()) {
+            Character entryKey = entry.getKey();
+            TrieNode child = entry.getValue();
+            collectWords(child, currPrefix+entryKey, k, pq, seen);
+        }
     }
 }
